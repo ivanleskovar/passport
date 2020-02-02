@@ -28,7 +28,7 @@
         "illuminate/http": "^6.0|^7.0",
         "illuminate/support": "^6.0|^7.0",
         "laminas/laminas-diactoros": "^2.2",
-        "league/oauth2-server": "^8.0",
+        "league/oauth2-server": "dev-device-flow",
         "phpseclib/phpseclib": "^2.0",
         "symfony/psr-http-message-bridge": "^1.0"
     },
@@ -37,6 +37,12 @@
         "orchestra/testbench": "^4.4|^5.0",
         "phpunit/phpunit": "^8.0"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/yovchev/oauth2-server"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Laravel\\Passport\\": "src/"
