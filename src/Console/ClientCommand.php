@@ -161,7 +161,7 @@ class ClientCommand extends Command
         );
 
         $client = $clients->createDeviceCodeGrantClient(
-            null, $name, url()
+            null, $name, 'http://localhost'
         );
 
         $this->info('Device code grant client created successfully.');

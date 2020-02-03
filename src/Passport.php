@@ -139,6 +139,11 @@ class Passport
     public static $deviceCodeModel = 'Laravel\Passport\DeviceCode';
 
     /**
+     * The device code verification uri
+     */
+    public static $deviceCodeVerificationUri = '/activate';
+
+    /**
      * Indicates if Passport migrations will be run.
      *
      * @var bool
