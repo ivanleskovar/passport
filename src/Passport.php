@@ -637,7 +637,24 @@ class Passport
         return new static::$refreshTokenModel;
     }
 
-/**
+    /**
+     * Get or set the device code verification uri.
+     *
+     * @param  string|null  $verificationUri
+     * @return string|static
+     */
+    public static function deviceCodeVerificationUri($verificationUri = null)
+    {
+        if (is_null($verificationUri)) {
+            return static::$deviceCodeVerificationUri;
+        }
+
+        static::$deviceCodeVerificationUri = $verificationUri;
+
+        return new static;
+    }
+
+    /**
      * Set the device code model class name.
      *
      * @param string $deviceCodeModel

@@ -110,8 +110,16 @@ class ClientRepository
      * @param  bool  $confidential
      * @return \Laravel\Passport\Client
      */
-    public function create($userId, $name, $redirect, $personalAccess = false, $password = false, $confidential = true, $device = false)
-    {
+
+    public function create(
+        $userId,
+        $name,
+        $redirect,
+        $personalAccess = false,
+        $password = false,
+        $device = false,
+        $confidential = true
+    ) {
         $client = Passport::client()->forceFill([
             'user_id' => $userId,
             'name' => $name,
@@ -138,11 +146,14 @@ class ClientRepository
      */
     public function createPersonalAccessClient($userId, $name, $redirect)
     {
-        return tap($this->create($userId, $name, $redirect, true), function ($client) {
-            $accessClient = Passport::personalAccessClient();
-            $accessClient->client_id = $client->id;
-            $accessClient->save();
-        });
+        return tap(
+            $this->create($userId, $name, $redirect, true, false, false, true),
+            function ($client) {
+                $accessClient = Passport::personalAccessClient();
+                $accessClient->client_id = $client->id;
+                $accessClient->save();
+            }
+        );
     }
 
     /**
@@ -155,7 +166,7 @@ class ClientRepository
      */
     public function createPasswordGrantClient($userId, $name, $redirect)
     {
-        return $this->create($userId, $name, $redirect, false, true);
+        return $this->create($userId, $name, $redirect, false, true, false, true);
     }
 
     /**
@@ -168,7 +179,7 @@ class ClientRepository
      */
     public function createDeviceCodeGrantClient($userId, $name, $redirect)
     {
-        return $this->create($userId, $name, $redirect, false, false, false, true);
+        return $this->create($userId, $name, $redirect, false, false, true, true);
     }
 
     /**

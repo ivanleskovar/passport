@@ -22,7 +22,7 @@ class DeviceCodeRepository implements DeviceCodeRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function persistNewDeviceCode(DeviceCodeEntityInterface $deviceCodeEntity)
+    public function persistDeviceCode(DeviceCodeEntityInterface $deviceCodeEntity)
     {
         $attributes = [
             'id' => $deviceCodeEntity->getIdentifier(),
@@ -30,10 +30,26 @@ class DeviceCodeRepository implements DeviceCodeRepositoryInterface
             'client_id' => $deviceCodeEntity->getClient()->getIdentifier(),
             'scopes' => $this->formatScopesForStorage($deviceCodeEntity->getScopes()),
             'revoked' => false,
+            'last_polled_at' => new \DateTimeImmutable,
             'expires_at' => $deviceCodeEntity->getExpiryDateTime(),
         ];
 
         Passport::deviceCode()->setRawAttributes($attributes)->save();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setDeviceCodeLastPolledTime($codeId, $lastPollTime)
+    {
+        $record = Passport::deviceCode()->where('id', $codeId)->first();
+
+        if (!$record) {
+            return;
+        }
+
+        $record->last_polled_at = $lastPollTime;
+        $record->save();
     }
 
     /**
@@ -50,6 +66,7 @@ class DeviceCodeRepository implements DeviceCodeRepositoryInterface
         $deviceCode = new DeviceCode();
         $deviceCode->setIdentifier($record->id);
         $deviceCode->setUserCode($record->user_code);
+        $deviceCode->setLastPollTime(new \DateTimeImmutable($record->last_polled_at));
 
         foreach ($record->scopes as $scope) {
             $deviceCode->addScope($scope);
