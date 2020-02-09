@@ -38,6 +38,14 @@ class DeviceCodeRepository
         Passport::deviceCode()->where('id', $id)->first()->setInterval($seconds);
     }
 
+    // @todo fix this temp fuction also unifi functions revoke ect.
+    public function activate($user_id, $user_code)
+    {
+        $deviceCode = Passport::deviceCode()->where('user_code', $user_code)->first();
+        $deviceCode->user_id = $user_id;
+        $deviceCode->save();
+    }
+
     /**
      * Revoke an device code.
      *

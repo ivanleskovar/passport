@@ -38,6 +38,7 @@ class Client extends Model
         'grant_types' => 'array',
         'personal_access_client' => 'bool',
         'password_client' => 'bool',
+        'device_client' => 'bool',
         'revoked' => 'bool',
     ];
 
@@ -80,7 +81,9 @@ class Client extends Model
      */
     public function firstParty()
     {
-        return $this->personal_access_client || $this->password_client;
+        return $this->personal_access_client ||
+               $this->password_client ||
+               $this->device_client;
     }
 
     /**

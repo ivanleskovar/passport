@@ -36,7 +36,7 @@ class RouteRegistrar
         $this->forTransientTokens();
         $this->forClients();
         $this->forPersonalAccessTokens();
-        $this->forDeviceAuthorization();
+        $this->forDeviceAccessTokens();
     }
 
     /**
@@ -46,6 +46,12 @@ class RouteRegistrar
      */
     public function forAuthorization()
     {
+        $this->router->middleware('guest')->post('/device-authorize', [
+            'uses' => 'DeviceAuthorizationController@authorize',
+            'as' => 'passport.authorizations.device',
+            'middleware' => 'throttle',
+        ]);
+
         $this->router->group(['middleware' => ['web', 'auth']], function ($router) {
             $router->get('/authorize', [
                 'uses' => 'AuthorizationController@authorize',
@@ -169,12 +175,28 @@ class RouteRegistrar
      *
      * @return void
      */
-    public function forDeviceAuthorization()
+    public function forDeviceAccessTokens()
     {
-        $this->router->post('/device-authorization', [
-            'uses' => 'DeviceAuthorizationController@authorize',
-            'as' => 'passport.authorizations.authorize.device',
-            'middleware' => 'throttle',
-        ]);
+        $this->router->group(['middleware' => ['web', 'auth']], function ($router) {
+            $router->get('/device-info/{user_code}', [
+                'uses' => 'DeviceAccessTokenController@check',
+                'as' => 'passport.device.check',
+            ]);
+
+            $router->get('/device-tokens', [
+                'uses' => 'DeviceAccessTokenController@forUser',
+                'as' => 'passport.device.tokens.index',
+            ]);
+
+            $router->post('/device-tokens', [
+                'uses' => 'DeviceAccessTokenController@store',
+                'as' => 'passport.device.tokens.store',
+            ]);
+
+            $router->delete('/device-tokens/{token_id}', [
+                'uses' => 'tokens@destroy',
+                'as' => 'passport.device.tokens.destroy',
+            ]);
+        });
     }
 }

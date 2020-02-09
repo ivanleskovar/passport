@@ -78,7 +78,7 @@ class ClientController
 
         return $this->clients->create(
             $request->user()->getKey(), $request->name, $request->redirect,
-            false, false, (bool) $request->input('confidential', true)
+            false, false, false, (bool) $request->input('confidential', true)
         )->makeVisible('secret');
     }
 
