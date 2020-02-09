@@ -205,7 +205,8 @@ class PassportServiceProvider extends ServiceProvider
         $grant = new DeviceCodeGrant(
             $this->app->make(Bridge\DeviceCodeRepository::class),
             $this->app->make(Bridge\RefreshTokenRepository::class),
-            new DateInterval('PT10M')
+            new DateInterval('PT10M'),
+            5 // @todo make the retryInterval configurable via the config
         );
 
         $grant->setVerificationUri(url(Passport::$deviceCodeVerificationUri));

@@ -14,6 +14,7 @@ $factory->define(Client::class, function (Faker $faker) {
         'redirect' => $faker->url,
         'personal_access_client' => 0,
         'password_client' => 0,
+        'device_client' => 0,
         'revoked' => 0,
     ];
 });
