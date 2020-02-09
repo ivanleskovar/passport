@@ -171,9 +171,9 @@ class RouteRegistrar
      */
     public function forDeviceAuthorization()
     {
-        $this->router->post('/device_authorization', [
+        $this->router->post('/device-authorization', [
             'uses' => 'DeviceAuthorizationController@authorize',
-            'as' => 'passport.authorizations.authorize_device',
+            'as' => 'passport.authorizations.authorize.device',
             'middleware' => 'throttle',
         ]);
     }

@@ -20,7 +20,8 @@ class CreateOauthDeviceCodesTable extends Migration
             $table->unsignedBigInteger('client_id');
             $table->text('scopes')->nullable();
             $table->boolean('revoked');
-            $table->dateTime('last_polled_at');
+            $table->integer('retry_interval')->default(5);
+            $table->dateTime('last_polled_at')->nullable();
             $table->dateTime('expires_at')->nullable();
         });
     }

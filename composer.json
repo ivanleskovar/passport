@@ -28,7 +28,7 @@
         "illuminate/http": "^6.0|^7.0",
         "illuminate/support": "^6.0|^7.0",
         "laminas/laminas-diactoros": "^2.2",
-        "league/oauth2-server": "dev-device-flow",
+        "league/oauth2-server": "dev-device-flow-grant",
         "phpseclib/phpseclib": "^2.0",
         "symfony/psr-http-message-bridge": "^1.0"
     },

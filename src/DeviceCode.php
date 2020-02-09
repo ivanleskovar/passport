@@ -43,15 +43,23 @@ class DeviceCode extends Model
      * @var array
      */
     protected $dates = [
+        'last_polled_at',
         'expires_at',
     ];
 
     /**
-     * Indicates if the model should be timestamped.
+     * The name of the "created at" column.
      *
-     * @var bool
+     * @var string
      */
-    public $timestamps = false;
+    const CREATED_AT = null;
+
+    /**
+     * The name of the "updated at" column.
+     *
+     * @var string
+     */
+    const UPDATED_AT = 'last_polled_at';
 
     /**
      * The "type" of the primary key ID.
@@ -68,5 +76,18 @@ class DeviceCode extends Model
     public function client()
     {
         return $this->belongsTo(Passport::clientModel());
+    }
+
+    /**
+     * Update the retry interval for this device.
+     *
+     * @param  int   $seconts
+     * @return bool
+     */
+    public function setInterval($seconds)
+    {
+        $this->retry_interval = $seconds;
+
+        return $this->save();
     }
 }
