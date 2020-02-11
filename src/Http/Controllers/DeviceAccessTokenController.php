@@ -2,12 +2,12 @@
 
 namespace Laravel\Passport\Http\Controllers;
 
-use Illuminate\Contracts\Validation\Factory as ValidationFactory;
+use Laravel\Passport\DeviceCodeRepository;
 use Laravel\Passport\DeviceCode;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Laravel\Passport\Passport;
-use Laravel\Passport\TokenRepository;
+use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
 class DeviceAccessTokenController
 {
@@ -28,16 +28,24 @@ class DeviceAccessTokenController
     /**
      * Create a controller instance.
      *
-     * @param  \Laravel\Passport\TokenRepository  $tokenRepository
+     * @param  \Laravel\Passport\DeviceCodeRepository  $deviceCodeRepository
      * @param  \Illuminate\Contracts\Validation\Factory  $validation
      * @return void
      */
-    public function __construct(TokenRepository $tokenRepository, ValidationFactory $validation)
-    {
+    public function __construct(
+        DeviceCodeRepository $deviceCodeRepository,
+        ValidationFactory $validation
+    ) {
         $this->validation = $validation;
-        $this->tokenRepository = $tokenRepository;
+        $this->deviceCodeRepository = $deviceCodeRepository;
     }
 
+    /**
+     * Check device request exist.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function request(Request $request)
     {
         $deviceCode = DeviceCode::where('user_code', $request->user_code)
@@ -57,11 +65,10 @@ class DeviceAccessTokenController
      */
     public function forUser(Request $request)
     {
-        $tokens = $this->tokenRepository->forUser($request->user()->getKey());
-
-        return $tokens->load('client')->filter(function ($token) {
-            return $token->client->device_client && ! $token->revoked;
-        })->values();
+        return $this->deviceCodeRepository
+                    ->forUser($request->user()->getKey())
+                    ->sortBy('expires_at')
+                    ->values();
     }
 
     /**
@@ -97,7 +104,7 @@ class DeviceAccessTokenController
      */
     public function destroy(Request $request, $tokenId)
     {
-        $token = $this->tokenRepository->findForUser(
+        $token = $this->deviceCodeRepository->findForUser(
             $tokenId, $request->user()->getKey()
         );
 

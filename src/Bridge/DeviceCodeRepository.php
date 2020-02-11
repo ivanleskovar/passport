@@ -2,7 +2,9 @@
 
 namespace Laravel\Passport\Bridge;
 
+use Laravel\Passport\TokenRepository;
 use Illuminate\Contracts\Events\Dispatcher;
+use Laravel\Passport\Events\AccessTokenCreated;
 use Laravel\Passport\DeviceCodeRepository as PassportDeviceCodeRepository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\DeviceCodeEntityInterface;
@@ -33,9 +35,13 @@ class DeviceCodeRepository implements DeviceCodeRepositoryInterface
      * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      * @return void
      */
-    public function __construct(PassportDeviceCodeRepository $deviceCodeRepository, Dispatcher $events)
-    {
+    public function __construct(
+        PassportDeviceCodeRepository $deviceCodeRepository,
+        TokenRepository $tokenRepository,
+        Dispatcher $events
+    ) {
         $this->events = $events;
+        $this->tokenRepository = $tokenRepository;
         $this->deviceCodeRepository = $deviceCodeRepository;
     }
 
@@ -64,8 +70,6 @@ class DeviceCodeRepository implements DeviceCodeRepositoryInterface
             'last_polled_at' => $deviceCodeEntity->getLastPolledDateTime(),
             'expires_at' => $deviceCodeEntity->getExpiryDateTime(),
         ]);
-
-        // @todo add events
     }
 
     /**
@@ -89,6 +93,17 @@ class DeviceCodeRepository implements DeviceCodeRepositoryInterface
         $deviceCodeEntity->setClient($clientEntity);
 
         $deviceCode->touch();
+
+        $this->events->listen(AccessTokenCreated::class, function($event) use ($deviceCodeEntity) {
+            if($event->clientId === $deviceCodeEntity->getClient()->getIdentifier()) {
+                // Exchange request for token
+                $token = $this->tokenRepository->find($event->tokenId);
+                $token->name = $deviceCodeEntity->getUserCode();
+                $token->save();
+
+                $this->revokeDeviceCode($deviceCodeEntity->getIdentifier());
+            }
+        });
 
         return $deviceCodeEntity;
     }

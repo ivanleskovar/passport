@@ -29,7 +29,11 @@ class DeviceCode implements DeviceCodeEntityInterface
      */
     public function setUserCode($userCode)
     {
-        $this->userCode = substr_replace($userCode, '-', 4, 0);
+        if(! preg_match("/\w+-\w+/", $userCode)) {
+            $userCode = substr_replace($userCode, '-', 4, 0);
+        }
+
+        $this->userCode = $userCode;
     }
 
     /**

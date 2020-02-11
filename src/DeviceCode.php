@@ -90,4 +90,14 @@ class DeviceCode extends Model
 
         return $this->save();
     }
+
+    /**
+     * Revoke the instance.
+     *
+     * @return bool
+     */
+    public function revoke()
+    {
+        return $this->forceFill(['revoked' => true])->save();
+    }
 }
