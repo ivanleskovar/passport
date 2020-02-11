@@ -38,9 +38,15 @@ class DeviceAccessTokenController
         $this->tokenRepository = $tokenRepository;
     }
 
-    public function check(Request $request, $userCode)
+    public function request(Request $request)
     {
-        return DeviceCode::where('user_code', $userCode)->first();
+        $deviceCode = DeviceCode::where('user_code', $request->user_code)
+                                ->where('expires_at', '>', now())
+                                ->first();
+
+        return $deviceCode ?? response()->json([
+            'message' => __('User code has expired or is invalid please try again.')
+        ], 404);
     }
 
     /**

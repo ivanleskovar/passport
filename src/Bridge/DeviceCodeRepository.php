@@ -59,6 +59,7 @@ class DeviceCodeRepository implements DeviceCodeRepositoryInterface
             'client_id' => $deviceCodeEntity->getClient()->getIdentifier(),
             'scopes' => $this->scopesToArray($deviceCodeEntity->getScopes()),
             'revoked' => false,
+            'info' => request()->ip(), // @todo give geo location using someting like ipinfo.io
             'retry_interval' => $deviceCodeEntity->getRetryInterval(),
             'last_polled_at' => $deviceCodeEntity->getLastPolledDateTime(),
             'expires_at' => $deviceCodeEntity->getExpiryDateTime(),

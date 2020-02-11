@@ -18,6 +18,7 @@ class CreateOauthDeviceCodesTable extends Migration
             $table->string('user_code', 9);
             $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->unsignedBigInteger('client_id');
+            $table->text('info');
             $table->text('scopes')->nullable();
             $table->boolean('revoked');
             $table->integer('retry_interval')->default(5);

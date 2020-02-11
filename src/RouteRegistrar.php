@@ -178,14 +178,15 @@ class RouteRegistrar
     public function forDeviceAccessTokens()
     {
         $this->router->group(['middleware' => ['web', 'auth']], function ($router) {
-            $router->get('/device-info/{user_code}', [
-                'uses' => 'DeviceAccessTokenController@check',
-                'as' => 'passport.device.check',
-            ]);
-
             $router->get('/device-tokens', [
                 'uses' => 'DeviceAccessTokenController@forUser',
                 'as' => 'passport.device.tokens.index',
+            ]);
+
+            $router->post('/device-request', [
+                'uses' => 'DeviceAccessTokenController@request',
+                'as' => 'passport.device.tokens.request',
+                'middleware' => 'throttle:5,10',
             ]);
 
             $router->post('/device-tokens', [
@@ -194,7 +195,7 @@ class RouteRegistrar
             ]);
 
             $router->delete('/device-tokens/{token_id}', [
-                'uses' => 'tokens@destroy',
+                'uses' => 'DeviceAccessTokenController@destroy',
                 'as' => 'passport.device.tokens.destroy',
             ]);
         });
