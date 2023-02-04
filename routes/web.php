@@ -8,15 +8,37 @@ Route::post('/token', [
     'middleware' => 'throttle',
 ]);
 
+Route::post('/device-authorize', [
+    'uses' => 'DeviceAuthorizationController@authorize',
+    'as' => 'device-authorize',
+    'middleware' => 'throttle',
+]);
+
 Route::get('/authorize', [
     'uses' => 'AuthorizationController@authorize',
     'as' => 'authorizations.authorize',
     'middleware' => 'web',
 ]);
 
+
+
 $guard = config('passport.guard', null);
 
+Route::middleware([ $guard ? 'auth:'.$guard : 'auth'])->group(function () {
+    Route::post('/device-tokens', [
+        'uses' => 'DeviceAccessTokenController@store',
+        'as' => 'device.tokens.store',
+    ]);
+
+    Route::get('/device-tokens', [
+        'uses' => 'DeviceAccessTokenController@forUser',
+        'as' => 'device.tokens.index',
+    ]);
+});
+
+
 Route::middleware(['web', $guard ? 'auth:'.$guard : 'auth'])->group(function () {
+
     Route::post('/token/refresh', [
         'uses' => 'TransientTokenController@refresh',
         'as' => 'token.refresh',

@@ -69,6 +69,19 @@ trait HasApiTokens
     }
 
     /**
+     * Activate new device for the user.
+     * @todo fix this not ready
+     * @param  string  $user_code
+     * @return \Laravel\Passport\PersonalAccessTokenResult
+     */
+    public function activateDevice($user_code)
+    {
+        return Container::getInstance()->make(DeviceCodeRepository::class)->activate(
+            $this->getKey(), $user_code
+        );
+    }
+
+    /**
      * Set the current access token for the user.
      *
      * @param  \Laravel\Passport\Token|\Laravel\Passport\TransientToken  $accessToken

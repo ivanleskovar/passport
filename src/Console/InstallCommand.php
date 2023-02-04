@@ -41,6 +41,7 @@ class InstallCommand extends Command
 
         $this->call('passport:client', ['--personal' => true, '--name' => config('app.name').' Personal Access Client']);
         $this->call('passport:client', ['--password' => true, '--name' => config('app.name').' Password Grant Client', '--provider' => $provider]);
+        $this->call('passport:client', ['--device' => true, '--name' => config('app.name').' Device Code Grant Client']);
     }
 
     /**
